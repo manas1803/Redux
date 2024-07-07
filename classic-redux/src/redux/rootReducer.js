@@ -1,6 +1,8 @@
-import { combineReducers } from 'redux'
-import bankPaymentReducer from './bankPayment/bankPaymentReducer'
+import { combineReducers } from "redux";
+import { bankPaymentReducer } from "./bankPaymentRedux/bankPaymentReducer";
 
-export const rootReducer = combineReducers({
+const rootReducer = combineReducers({
     bankPayment:bankPaymentReducer
 })
+
+export default rootReducer;

@@ -1,14 +1,17 @@
 import { useState } from "react";
 import {useDispatch} from "react-redux"
-import { addAmount } from "./redux/bankPayment/bankPaymentAction";
+import { addAmount, withdrawAmount } from "./redux/bankPaymentRedux/bankPaymentActions";
 
 function App() {
   const dispatch = useDispatch()
   const [amount,setAmount] = useState(0)
-  const [loan,setLoan] = useState(0)
   
   const handleAddAmount = ()=>{
     dispatch(addAmount(amount))
+  }
+
+  const handleWithdrawAmount = ()=>{
+    dispatch(withdrawAmount(amount))
   }
   
   return (
@@ -18,15 +21,10 @@ function App() {
         <input type="number" onChange={(e)=>setAmount(e.target.value)} value={amount} />
         <button onClick={handleAddAmount}>Add Amount</button>
       </div>
-      <div className="take-loan">
-        <label>Take Loan</label>
-        <input type="number" onChange={(e)=>setLoan(e.target.value)} value={loan}/>
-        <button>Take Loan</button>
-      </div>
       <div className="remove-amount">
         <label>Remove Amount</label>
         <input type="number" onChange={(e)=>setAmount((amt)=>amt-e.target.value)} value={amount}/>
-        <button>Remove Amount</button>
+        <button onClick={handleWithdrawAmount}>Withdraw Amount</button>
       </div>
     </div>
   );
