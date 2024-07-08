@@ -191,3 +191,13 @@ const handleAddAmount = (amount)=>{
 ```
 
 > As you can see there is a lot of code just for the setup of a very basic state management. This is the main reason of shifting to a better and more precise version of redux which removes the evident boilerplate code
+
+## Redux Thunk
+Redux-Thunk is a middleware for Redux that allows you to write action creators that return a `function` instead of an `action object`. This function receives the store's `dispatch` method and `getState` function as arguments, allowing it to dispatch multiple actions, perform `asynchronous operations`, and access the current state if needed before dispatching an action.
+
+### What is middleWare?
+So basically they are the part of the code which helps to interact with actions dispatched to the Redux store before they reach the reducer. These sit between the action dispatch and reducer.
+
+
+
+> The primary purpose of redux-thunk is to handle asynchronous operations.
