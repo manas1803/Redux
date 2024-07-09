@@ -198,6 +198,156 @@ Redux-Thunk is a middleware for Redux that allows you to write action creators t
 ### What is middleWare?
 So basically they are the part of the code which helps to interact with actions dispatched to the Redux store before they reach the reducer. These sit between the action dispatch and reducer.
 
-
-
 > The primary purpose of redux-thunk is to handle asynchronous operations.
+
+### Steps to Proceed
+
+With redux thunk the main part is that it is added as a middleware to handle the `async` calls between the reducer and the store. So we add thunk as a middleware. Also `thunk` is a special type of function and with respect to redux `thunk` is basically a function that returns `dispatch` and `state`
+
+#### I. Creating the store
+Similar to how we proceeded with classic redux we will be creating a new file in src as `store.js`
+
+**store.js**
+
+```js
+import { createStore,applyMiddlewares } from "redux"
+import {thunk } from "redux-thunk";
+
+const thunk = applyMiddlewares(thunk)
+const store = createStore()
+
+
+export default store;
+```
+
+#### II. Creating the rootReducer
+
+Now again we will be creating a root reducer since we want to pass that to our store
+
+**rootReducer**
+```js
+const rootReducer = combineReducers({})
+export default rootReducer;
+```
+**store.js**
+
+```js
+import { createStore,applyMiddlewares } from "redux"
+import {thunk } from "redux-thunk";
+import rootReducer from "redux/rootReducer"
+
+const thunk = applyMiddlewares(thunk)
+const store = createStore(rootReducer,thunk)
+
+
+export default store;
+```
+
+#### III. Creating the Actions and Action Types
+Here we will again create the action files and action types but now the action function will be a thunk.
+<br> Lets create the files. 
+
+**common/actionCreator.js**
+```js
+export const actionCreatorWithPayload = (type,payload)=>{
+    return {
+        type,
+        payload
+    }
+}
+
+export const actionCreatorWithoutPayload = (type)=>{
+    return{
+        type
+    }
+}
+
+
+```
+
+**redux/userRedux/userActionTypes.js**
+```js
+export const USER_DATA = {
+  FETCH_REQUEST = "user/request",
+  FETCH_SUCCESS = "user/success"
+  FETCH_FAILURE = "user/failed"
+}
+
+```
+**redux/userRedux/userAction.js**
+
+```js
+import {actionCreatorWithPayload,actionCreatorWithoutPayload} from "common/actionCreator"
+import {USER_DATA} from "./bankPaymentActionTypes"
+
+const fetchRquest = ()=>actionCreatorWithoutPayload(USER_DATA.FETCH_REQUEST)
+const fetchSuccess = (data)=>actionCreatorWithPayload(USER_DATA.FETCH_SUCCESS,data)
+const fetchFailure = (error)=>actionCreatorWithPayload(USER_DATA.FETCH_FAILURE,error)
+
+
+export const fetchData = ()=>{
+    return async (dispatch,getState)=>{
+        dispatch(fetchRequest())
+        try{
+            const data = axios.get("API here").then((res)=>dispatch(fetchSuccess(res.data)))
+        }
+        catch(error){
+            dispatch(fetchFailure(error))
+        }
+    }
+}
+```
+
+#### IV. Creating our reducer
+
+This is exactly like the classic redux. We need to create an initial state and our reducer function
+
+**userRedux/userReducer.js**
+```js
+const INITIAL_STATE = {
+    isLoading:false,
+    user:[],
+    error:null
+}
+
+export const userReducer = (state=INITIAL_STATE,action)=>{
+    const {type,payload} = action
+    switch(type){
+        case USER_DATA.FETCH_REQUEST:
+            return{
+                ...state,
+                isLoading:true
+            }
+        case USER_DATA.FETCH_SUCCESS:
+            return{
+                ...state,
+                user:payload,
+                isLoading:false
+            }
+        case USER_DATA.FETCH_FAILURE:
+            return{
+                ...state,
+                error:payload
+            }
+        default:
+            return state
+    }
+}
+```
+
+#### V. Dispatching the action
+Since we are making an API call we dispatch the action using the `useEffect` hook. Dispatching is similar to the classic redux
+
+**App.js**
+
+```js
+import {useEffect} from "react"
+import {useDispatch} from "react-redux"
+import {fetchData} from "redux/userAction"
+
+const dispatch = useDispatch()
+useEffect(()=>{
+    dispatch(fetchData())    
+},[])
+
+```
