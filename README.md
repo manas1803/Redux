@@ -351,3 +351,74 @@ useEffect(()=>{
 },[])
 
 ```
+## Redux Toolkit
+The new and the latest version that is used with redux is redux toolkit. The idea behind the use of the redux toolkit is to avoid unnecessary boilerplate code which we saw in case of classic redux and redux thunk
+
+### Steps to proceed
+
+#### I. Create a new store
+Just like in classic redux we have to create a new store. In this scenario what we do is we create a new file as store and use `configurestore` method
+
+**store.js**
+```js
+import {configureStore} from "redux"
+
+const store = configureStore({})
+
+export default store
+```
+
+#### II. Creating a slice
+In the new redux toolkit the idea of creating actions and reducers separately was removed since it cause a lot of boilerplate code. So the idea was to create an entirely different method called as `slice`
+<br>
+A slice contains `reducers` and `actions` together. We don't need to explicitly define the type of action for slice.<br> 
+Syntax wise we start as usual by creating an initial state for the slice, then we use the method `createSlice` which help us in creating a slice<br>
+`createSlice` takes 3 arguments :- 
+1. name :- name that will be assigned to the slice
+2. InitialState :- initialState of the slice
+3. reducers :- An object that contains different `methods` of reducers to be used
+
+At last we export all of the reducers as default and to use the individual reducer we export them as individual `action` of the slice
+
+**todosSlice.js**
+
+```js
+import {createSlice,nanoid} from "@reduxjs/toolkit"
+
+const INITIAL_STATE = {
+    todos = [{id:"1",task:"Clean Clothes"}]
+}
+
+const todosSlice = createSlice({
+    name:"todos",
+    initialState:INITIAL_STATE,
+    reducers : {
+        addTodos:(state,action)=>{
+            const task = {
+                id: nanoid(),
+                task:action.payload
+            }
+            state.todos.push(task)
+        },
+        removeTodos:(state,action)=>{
+            return state.todos.filter((todo)=>todo.id!==action.payload.id)
+        }
+    }
+})
+
+export const {addTodos,removeTodos} = todosSlice.actions
+export default todosSlice.reducer
+```
+
+**store.js**
+```js
+import {configureStore} from "@reduxjs/toolkit"
+import todosReducer from "../redux/todos/todosSlice"
+
+const store = configureStore({
+    reducer:todosReducer
+})
+
+export default store;
+```
+
